@@ -65,7 +65,7 @@ public class Vector2 {
         this.magnitude = Math.sqrt((x*x)+(y*y));
     }
 
-    public void update(){
+    public void updateVals(){
         if(Math.abs(this.magnitude) > 0 && Math.abs(this.magnitude) < EPSILON){
             this.magnitude = 0;
         }

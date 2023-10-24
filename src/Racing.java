@@ -14,12 +14,12 @@ public class Racing {
     static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 800;
 
     static final int PARTITION_WIDTH = 100, PARTITION_HEIGHT = 100;
-    static final double EPSILON = 1E-8;
 
     static PartitionBlock[] blocks = new PartitionBlock[WINDOW_WIDTH/PARTITION_WIDTH * WINDOW_HEIGHT/PARTITION_HEIGHT];
     static final int PARTITION_ARRAY_HEIGHT = WINDOW_HEIGHT/PARTITION_HEIGHT;
 
     static final Player PLAYER = new Player(200,200);
+    static final Graphic graphic = new Graphic();
 
     public static void main(String[] args) {
         for(int i = 0; i < blocks.length; i++){
@@ -30,7 +30,7 @@ public class Racing {
         TIMER.addActionListener(new UpdateHandler());
         TIMER.start();
 
-        screen.getContentPane().add(new Graphic());
+        screen.getContentPane().add(graphic);
         screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         screen.setSize(WINDOW_WIDTH,WINDOW_HEIGHT + WINDOW_HEADER_OFFSET);
         screen.getContentPane().add(PLAYER);
@@ -43,9 +43,12 @@ public class Racing {
     static class UpdateHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            PLAYER.update();
-            PLAYER.transform.update();
             screen.repaint();
+            graphic.repaint();
+            PLAYER.update();
+            PLAYER.repaint();
+
+            PLAYER.transform.updateVals();
         }
     }
 
@@ -113,10 +116,10 @@ public class Racing {
 
         private void velUpdate(){
             if(W){
-                transform.changeMagnitudeBy(0.25);
+                transform.changeMagnitudeBy(0.4);
             }
             if(S){
-                transform.changeMagnitudeBy(-0.25);
+                transform.changeMagnitudeBy(-0.4);
             }
             if(A){
                 transform.changeThetaBy(Math.toRadians(1)*-3);
@@ -148,7 +151,7 @@ public class Racing {
             g.drawLine((int)(posX)+2, (int)(posY)+2, (int)(posX)+2+(int)((transform.x)*10), (int)(posY)+2+(int)((transform.y)*10));
 
             Graphics2D g2d = (Graphics2D) g;
-            g2d.drawString("x: "+transform.x+" | y: "+transform.y+"\nmag: "+transform.magnitude+" | theta: "+transform.theta, 0, 200);
+            g2d.drawString("x: "+transform.x+" | y: "+transform.y+" | mag: "+transform.magnitude+" | theta: "+transform.theta, 0, 200);
         }
     }
 
@@ -185,7 +188,11 @@ public class Racing {
         protected void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
             for(PartitionBlock p : blocks){
-                g2d.setColor(Color.ORANGE);
+                if(p == PLAYER.block){
+                    g2d.setColor(Color.BLUE);
+                }else{
+                    g2d.setColor(Color.ORANGE);
+                }
                 g2d.draw(new Rectangle(p.x*PARTITION_WIDTH, p.y*PARTITION_HEIGHT, PARTITION_WIDTH, PARTITION_HEIGHT));
             }
         }
